@@ -1,0 +1,365 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Movie Sentiment Analysis</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+
+background:linear-gradient(135deg,#081229,#102A43,#1E3A8A);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:40px;
+
+}
+
+.container{
+
+width:900px;
+max-width:95%;
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(20px);
+border-radius:25px;
+padding:40px;
+box-shadow:0 15px 45px rgba(0,0,0,.35);
+
+}
+
+.logo{
+
+font-size:55px;
+text-align:center;
+
+}
+
+h1{
+
+color:white;
+text-align:center;
+margin-top:10px;
+font-size:38px;
+
+}
+
+.subtitle{
+
+color:#d9e4ff;
+text-align:center;
+margin-bottom:35px;
+font-size:17px;
+
+}
+
+label{
+
+color:white;
+font-size:18px;
+font-weight:500;
+
+}
+
+textarea{
+
+width:100%;
+height:220px;
+margin-top:15px;
+padding:18px;
+font-size:16px;
+border-radius:18px;
+border:none;
+outline:none;
+resize:none;
+background:white;
+
+}
+
+button{
+
+width:100%;
+margin-top:25px;
+padding:18px;
+font-size:18px;
+border:none;
+border-radius:18px;
+background:#3B82F6;
+color:white;
+cursor:pointer;
+transition:.3s;
+font-weight:600;
+
+}
+
+button:hover{
+
+background:#2563EB;
+transform:translateY(-2px);
+
+}
+
+.result{
+
+margin-top:35px;
+padding:25px;
+border-radius:18px;
+text-align:center;
+
+}
+
+.positive{
+
+background:#16A34A;
+
+}
+
+.negative{
+
+background:#DC2626;
+
+}
+
+.result h2{
+
+color:white;
+font-size:30px;
+
+}
+
+.footer{
+
+margin-top:35px;
+text-align:center;
+color:#d1d5db;
+font-size:14px;
+
+}
+
+.upload-box{
+
+margin-top:35px;
+padding:25px;
+border-radius:18px;
+border:2px dashed rgba(255,255,255,.4);
+
+}
+
+.upload-box h3{
+
+color:white;
+margin-bottom:15px;
+
+}
+
+input[type=file]{
+
+color:white;
+
+}
+
+.upload-btn{
+
+background:#9333EA;
+
+}
+
+.upload-btn:hover{
+
+background:#7E22CE;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo">
+🎬
+</div>
+
+<h1>Movie Sentiment Analysis</h1>
+
+<p class="subtitle">
+Powered by TF-IDF + Logistic Regression • Django • Machine Learning
+</p>
+
+{% if error %}
+
+<div style="
+background:#DC2626;
+color:white;
+padding:15px;
+border-radius:12px;
+margin-bottom:20px;
+text-align:center;
+font-weight:600;">
+
+{{ error }}
+
+</div>
+
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<label>
+Enter Movie Review
+</label>
+
+<textarea
+name="review"
+placeholder="Type or paste a movie review here..."></textarea>
+
+<button type="submit">
+
+🔍 Analyze Sentiment
+
+</button>
+
+</form>
+
+{% if prediction %}
+
+
+<div class="result {% if prediction == 'positive' %}positive{% else %}negative{% endif %}">
+
+<h2>
+{% if prediction == "positive" %}
+😊 Positive Review
+{% else %}
+😔 Negative Review
+{% endif %}
+</h2>
+
+<p style="margin-top:15px;font-size:18px;">
+AI Confidence Score
+</p>
+
+<div style="
+width:100%;
+height:18px;
+background:rgba(255,255,255,.3);
+border-radius:30px;
+overflow:hidden;
+margin-top:18px;
+">
+
+<div style="
+height:100%;
+width:{{ confidence }}%;
+background:white;
+border-radius:30px;
+transition:1s;
+"></div>
+
+</div>
+
+<h1 style="
+margin-top:20px;
+font-size:55px;
+font-weight:700;
+">
+
+{{ confidence }}%
+
+</h1>
+
+{% if confidence >= 90 %}
+
+<p style="font-size:18px;">
+✔ Very High Confidence
+</p>
+
+{% elif confidence >= 75 %}
+
+<p style="font-size:18px;">
+✔ High Confidence
+</p>
+
+{% elif confidence >= 60 %}
+
+<p style="font-size:18px;">
+⚠ Moderate Confidence
+</p>
+
+{% else %}
+
+<p style="font-size:18px;">
+⚠ Low Confidence
+</p>
+
+{% endif %}
+
+</div>
+
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<div class="upload-box">
+
+<h3>
+📁 Batch Sentiment Prediction
+</h3>
+
+<p style="color:white;margin-bottom:15px;">
+Upload a CSV file with a column named <b>review</b>. The system will analyze every review and download a new CSV containing the predicted sentiment.
+</p>
+
+<input
+type="file"
+name="csv_file"
+accept=".csv"
+required>
+
+<br><br>
+
+<button
+type="submit"
+name="csv_submit"
+class="upload-btn">
+
+Predict CSV
+
+</button>
+
+</div>
+
+</form>
+<div class="footer">
+
+Developed using Python • Django • Scikit-learn • TF-IDF • Logistic Regression
+
+</div>
+
+</div>
+
+</body>
+
+</html>
+```
