@@ -3,7 +3,12 @@ import re
 import string
 import nltk
 from nltk.corpus import stopwords
-stop_words = set(stopwords.words('english'))
+
+try:
+    stop_words = set(stopwords.words('english'))
+except LookupError:
+    nltk.download('stopwords')
+    stop_words = set(stopwords.words('english'))
 
 stop_words.remove("not")
 stop_words.remove("no")
