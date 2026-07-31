@@ -23,10 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-d@=nm_&iirfxvgxdakic1=)^s8ty3dju@oqxj8b2#%zp)!ales'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = [
+    "moviesentimentanalysis-xis4.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
 
 # Application definition
 
